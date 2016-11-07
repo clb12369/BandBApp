@@ -15,9 +15,9 @@ public class DbFactory : IDbContextFactory<DB> {
             .AddEnvironmentVariables(prefix: "ASPNETCORE_")
             .Build();        
 
-        string endpoint = true ? "dev" : "prod";
         var builder = new DbContextOptionsBuilder<DB>();
-        builder.UseNpgsql(config.GetConnectionString($"Postgres-{endpoint}"));
+        // builder.UseNpgsql(config.GetConnectionString("Postgres:Dev"));
+        // builder.UseSqlite(config.GetConnectionString("Sqlite"));
         return new DB(builder.Options);
     }
 }

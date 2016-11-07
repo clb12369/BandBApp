@@ -18,9 +18,10 @@ public class HomeController : Controller
     }
 
     [HttpGet("/{username?}")]
-    [HttpGet("Home/Index/{username?}")]
+    [HttpGet("home/index/{username?}")]
     public IActionResult Root(string username = "you")
     {
+        // Console.WriteLine(HttpContext);
         ViewData["Message"] = "Some extra info can be sent to the view";
         ViewData["Username"] = username;
         return View("Index"); // View(new Student) method takes an optional object as a "model", typically called a ViewModel
