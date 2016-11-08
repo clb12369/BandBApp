@@ -46,7 +46,7 @@ public partial class Handler {
 
     // configure your app
     // --------------------------------------------------------
-    protected SessionOptions _session = SessionOptions.Identity;
+    protected SessionOptions _session = SessionOptions.Cookie;
     protected DatabaseOptions _db = DatabaseOptions.InMemory;
     protected RestfulOptions _restful = RestfulOptions.CORS;
     protected SwaggerOptions _swagger = SwaggerOptions.UI;

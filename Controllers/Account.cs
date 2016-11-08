@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Session;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
