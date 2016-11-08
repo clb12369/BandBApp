@@ -6,18 +6,15 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
-
 public static class Seed
 {
-    public static void Initialize(DB db, bool isDevEnvironment)
+    public static void Initialize(DB db, bool canCreate, bool mustMigrate)
     {
-        // use these for local Sqlite or in-memory db's
-        // db.Database.EnsureDeleted(); // delete then, ...
-        // db.Database.EnsureCreated(); // create the tables!!
-        
-        // use this for sql databases that persists (i.e. Heroku PostgreSQL)
-        // and comment out for in-memory DB
-        // db.Database.Migrate();
+        if(canCreate) {
+            db.Database.EnsureDeleted();
+            db.Database.EnsureCreated();
+        }
+        if(mustMigrate) db.Database.Migrate();
         
         if(db.Cards.Any() || db.CardLists.Any()) return;
 
@@ -27,7 +24,7 @@ public static class Seed
             CardList todo = new CardList { Summary="Todo items", Cards = new List<Card>() };
 
             for(var i = 0; i < 10; i++)
-                todo.Cards.Add(new Card { Title = $"Test Card {i}", Content = $"Test Content {i}",  });
+                todo.Cards.Add(new Card { Title = $"Test Card {i}", Text = $"Test Content {i}",  });
             
             b.Lists.Add(todo);
         };

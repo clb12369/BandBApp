@@ -46,8 +46,8 @@ public partial class Handler {
 
     // configure your app
     // --------------------------------------------------------
-    protected SessionOptions _session = SessionOptions.Cookie;
-    protected DatabaseOptions _db = DatabaseOptions.InMemory;
+    protected SessionOptions _session = SessionOptions.None;
+    protected DatabaseOptions _db = DatabaseOptions.Sqlite;
     protected RestfulOptions _restful = RestfulOptions.CORS;
     protected SwaggerOptions _swagger = SwaggerOptions.UI;
     protected AuthOptions _auth = AuthOptions.Google | AuthOptions.Facebook;
@@ -80,7 +80,6 @@ public partial class Handler {
 
     public void ConfigureServices(IServiceCollection services)
     {
-        // Add framework services.
         services.AddApplicationInsightsTelemetry(Configuration);
 
         switch(_db){
@@ -100,15 +99,15 @@ public partial class Handler {
         
         switch(_session){
             case SessionOptions.Identity:
-                services.AddIdentity<User, NormalRole>()
-                        .AddEntityFrameworkStores<DB, int>()
+                services.AddIdentity<IdentityUser, IdentityRole>()
+                        .AddEntityFrameworkStores<DB>()
                         .AddDefaultTokenProviders();
-                services.AddScoped<IAuthService, AuthService>();
+                
                 services.Configure<IdentityOptions>(options =>
                 {
                     // Password settings
                     options.Password.RequireDigit = true;
-                    options.Password.RequiredLength = 16;
+                    options.Password.RequiredLength = 8;
                     options.Password.RequireNonAlphanumeric = true;
                     options.Password.RequireUppercase = true;
                     options.Password.RequireLowercase = true;
@@ -125,6 +124,9 @@ public partial class Handler {
                     // User settings
                     options.User.RequireUniqueEmail = true;
                 });
+
+                services.AddScoped<IAuthService, AuthService>();
+
                 break;
             case SessionOptions.Cookie:
                 services.AddDistributedMemoryCache();
@@ -187,10 +189,10 @@ public partial class Handler {
         switch(_session){
             case SessionOptions.Identity:
                 app.UseIdentity();
-                if(env.IsDevelopment()){
-                    CreateStuntUsers();
-                    app.UseStuntman(StuntmanOptions);
-                }
+                // if(env.IsDevelopment()){
+                //     CreateStuntUsers();
+                //     app.UseStuntman(StuntmanOptions);
+                // }
                 break;
             case SessionOptions.Cookie: app.UseSession(); break;
         }
@@ -216,7 +218,10 @@ public partial class Handler {
             app.UseStatusCodePages();
         }
 
-        Seed.Initialize(db, env.IsDevelopment());
+        Seed.Initialize(
+            db, 
+            _db == DatabaseOptions.InMemory || _db == DatabaseOptions.Sqlite,
+            _db == DatabaseOptions.Postgres);
 
         app.UseApplicationInsightsRequestTelemetry();
         app.UseApplicationInsightsExceptionTelemetry();
@@ -237,7 +242,7 @@ public partial class Handler {
         };
 
         if((_auth & AuthOptions.Google) != 0) authg();
-        if((_auth & AuthOptions.Facebook) != 0) authg();
+        if((_auth & AuthOptions.Facebook) != 0) authfb();
 
         app.UseMvc();
 
@@ -247,5 +252,13 @@ public partial class Handler {
         }
     }
 
+    public static readonly StuntmanOptions StuntmanOptions = new StuntmanOptions();
+
+    public void CreateStuntUsers(){
+        StuntmanOptions
+        .AddUser(
+            new StuntmanUser("user-1", "User 1")
+                .AddClaim("name", "John Doe"));
+    }
 }
 

@@ -19,7 +19,7 @@ public class Card : HasId
     public string Title { get; set; }
     [Required]
     [StringLength(250, MinimumLength = 10)]
-    public string Content { get; set; }
+    public string Text { get; set; }
 
     public int CardListId {get;set;}
 }
@@ -45,7 +45,7 @@ public class Board : HasId {
 }
 
 // colocate DbSet declarations with classes
-public partial class DB : DbContext {
+public partial class DB {
     public DbSet<Card> Cards { get; set; }
     public DbSet<CardList> CardLists { get; set; }
     public DbSet<Board> Boards { get; set; }

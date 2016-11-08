@@ -5,9 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 
 internal static class Utils {
-    public static void Log(this Object me){
-        Console.WriteLine(JsonConvert.SerializeObject(me));
-    }
+
+    public static string ToJSON(this Object me) => JsonConvert.SerializeObject(me);
+
+    public static void Log(this Object me) => Console.WriteLine(me.ToJSON());
 
     public static Object ToErrorObject(this ModelStateDictionary d){
         return new {

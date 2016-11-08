@@ -5,37 +5,39 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
+using System.ComponentModel.DataAnnotations;
 
 public interface IAuthService {
-    Task<bool> Login(string email, string pass, bool rememberme);
+    Task<bool> Login(string email, string pass);
     Task Logout();
     Task<bool> Register(string email, string pass);
     Task<bool> ResetPassword(string email, Func<Object, string> getCallbackUrl);
-    // Task<User> GetUser();
+    // Task<IdentityUser> GetUser();
 }
 
 public class AuthService : IAuthService {
-    private UserManager<User> u;
-    private SignInManager<User> s;
+    private UserManager<IdentityUser> u;
+    private SignInManager<IdentityUser> s;
     private IEmail emailer;
 
-    public AuthService(UserManager<User> u, SignInManager<User> s, IEmail emailer){
+    public AuthService(UserManager<IdentityUser> u, SignInManager<IdentityUser> s, IEmail emailer){
         this.u = u;
         this.s = s;
         this.emailer = emailer;
     }
 
-    public async Task<bool> Login(string email, string pass, bool rememberme = true){
-        return (await s.PasswordSignInAsync(email, pass, rememberme, lockoutOnFailure: false)).Succeeded;
+    public async Task<bool> Login(string email, string pass){
+        return (await s.PasswordSignInAsync(email, pass, true, lockoutOnFailure: false)).Succeeded;
     }
 
     public async Task<bool> Register(string email, string pass){
-        var user = new User { UserName = email, Email = email };
+        var user = new IdentityUser { UserName = email, Email = email };
         if((await u.CreateAsync(user, pass)).Succeeded){
             await s.SignInAsync(user, isPersistent: true);
             return true;
@@ -62,6 +64,14 @@ public class AuthService : IAuthService {
         return true;
     }
 
-    // public Task<User> GetUser(HttpContext) => await u.GetUserAsync(HttpContext.User);
-    
+    // public Task<IdentityUser> GetUser(HttpContext) => await u.GetUserAsync(HttpContext.User);
+}
+
+public class UserView {
+    [Required]
+    [EmailAddress]
+    public string Email {get;set;}
+    [Required]
+    [DataType(DataType.Password)]
+    public string Password {get;set;}
 }

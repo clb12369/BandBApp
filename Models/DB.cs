@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using System;
@@ -16,17 +17,15 @@ public class DbFactory : IDbContextFactory<DB> {
             .Build();        
 
         var builder = new DbContextOptionsBuilder<DB>();
-        // builder.UseNpgsql(config.GetConnectionString("Postgres:Dev"));
-        // builder.UseSqlite(config.GetConnectionString("Sqlite"));
+        builder.UseNpgsql(config.GetConnectionString("Postgres:Dev"));
         return new DB(builder.Options);
     }
 }
 
-public partial class DB : DbContext {
+public partial class DB : IdentityDbContext<IdentityUser> {
     public DB(DbContextOptions<DB> options): base(options){}
-
-    protected override void OnModelCreating(ModelBuilder builder)
-    {
-        base.OnModelCreating(builder);
-    }
 }
+
+// public partial class DB : DbContext {
+//     public DB(DbContextOptions<DB> options): base(options){}
+// }

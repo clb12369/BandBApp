@@ -9,8 +9,8 @@ public class CardController : CRUDController<Card> {
     [HttpGet("search")]
     public IActionResult Search([FromQuery]string term, int listId = -1){
         return Ok(r.Read(dbset => dbset.Where(card => 
-            card.Title.IndexOf(term) != -1
-            || card.Content.IndexOf(term) != -1
+            card.Title.ToLower().IndexOf(term.ToLower()) != -1
+            || card.Text.ToLower().IndexOf(term.ToLower()) != -1
         )));
     }
 }
