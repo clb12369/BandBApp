@@ -45,7 +45,7 @@ public class Board : HasId {
 }
 
 // colocate DbSet declarations with classes
-public partial class DB {
+public partial class DB : IdentityDbContext<IdentityUser> {
     public DbSet<Card> Cards { get; set; }
     public DbSet<CardList> CardLists { get; set; }
     public DbSet<Board> Boards { get; set; }

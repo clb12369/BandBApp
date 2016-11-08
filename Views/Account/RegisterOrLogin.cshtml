@@ -1,6 +1,9 @@
 @model UserView
+@{
+    var a = ViewBag.Action ?? "Register";
+}
 
-<form asp-controller="Account" asp-action="Register">
+<form asp-controller="Account" asp-action="@a">
 
     <div asp-validation-summary="All"></div>
 

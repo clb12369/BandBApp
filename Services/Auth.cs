@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
-using System.ComponentModel.DataAnnotations;
 
 public interface IAuthService {
     Task<bool> Login(string email, string pass);
@@ -65,13 +64,4 @@ public class AuthService : IAuthService {
     }
 
     // public Task<IdentityUser> GetUser(HttpContext) => await u.GetUserAsync(HttpContext.User);
-}
-
-public class UserView {
-    [Required]
-    [EmailAddress]
-    public string Email {get;set;}
-    [Required]
-    [DataType(DataType.Password)]
-    public string Password {get;set;}
 }

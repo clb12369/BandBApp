@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 [Authorize]
 [Route("/account")]
@@ -29,6 +31,7 @@ public class AccountController : Controller
     [AllowAnonymous]
     public IActionResult Register()
     {
+        ViewData["Action"] = "Register";
         return View("RegisterOrLogin");
     }
 
@@ -38,6 +41,7 @@ public class AccountController : Controller
     {
         if (!ModelState.IsValid || !(await auth.Register(user.Email, user.Password))){
             ModelState.AddModelError("", "That email/password combination did not work.");
+            ViewData["Action"] = "Register";
             return View("RegisterOrLogin", user);
         }
         
@@ -48,6 +52,7 @@ public class AccountController : Controller
     [AllowAnonymous]
     public IActionResult Login()
     {
+        ViewData["Action"] = "Login";
         return View("RegisterOrLogin");
     }
 
@@ -57,6 +62,7 @@ public class AccountController : Controller
     {
         if (!ModelState.IsValid){
             ModelState.AddModelError("", "Both email/password are required.");
+            ViewData["Action"] = "Login";
             return View("RegisterOrLogin", user);
         }
 
@@ -73,4 +79,13 @@ public class AccountController : Controller
         await auth.Logout();
         return Redirect("/");
     }
+}
+
+public class UserView {
+    [Required]
+    [EmailAddress]
+    public string Email {get;set;}
+    [Required]
+    [DataType(DataType.Password)]
+    public string Password {get;set;}
 }

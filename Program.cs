@@ -46,8 +46,8 @@ public partial class Handler {
 
     // configure your app
     // --------------------------------------------------------
-    protected SessionOptions _session = SessionOptions.None;
-    protected DatabaseOptions _db = DatabaseOptions.Sqlite;
+    protected SessionOptions _session = SessionOptions.Identity;
+    protected DatabaseOptions _db = DatabaseOptions.InMemory;
     protected RestfulOptions _restful = RestfulOptions.CORS;
     protected SwaggerOptions _swagger = SwaggerOptions.UI;
     protected AuthOptions _auth = AuthOptions.Google | AuthOptions.Facebook;
@@ -124,9 +124,7 @@ public partial class Handler {
                     // User settings
                     options.User.RequireUniqueEmail = true;
                 });
-
                 services.AddScoped<IAuthService, AuthService>();
-
                 break;
             case SessionOptions.Cookie:
                 services.AddDistributedMemoryCache();
@@ -221,7 +219,7 @@ public partial class Handler {
         Seed.Initialize(
             db, 
             _db == DatabaseOptions.InMemory || _db == DatabaseOptions.Sqlite,
-            _db == DatabaseOptions.Postgres);
+            _db == DatabaseOptions.Postgres || _db == DatabaseOptions.Sqlite);
 
         app.UseApplicationInsightsRequestTelemetry();
         app.UseApplicationInsightsExceptionTelemetry();
@@ -258,7 +256,8 @@ public partial class Handler {
         StuntmanOptions
         .AddUser(
             new StuntmanUser("user-1", "User 1")
-                .AddClaim("name", "John Doe"));
+                .AddClaim("name", "John Doe")
+                .AddClaim("IsAdmin", "True"));
     }
 }
 
